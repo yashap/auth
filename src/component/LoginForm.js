@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { Text, StyleSheet } from 'react-native';
-import firebase from 'firebase';
 
 import { Button, Card, CardSection, Input, Spinner } from './common';
+import Auth from '../service/Auth';
 
 export default class LoginForm extends Component {
   constructor(props) {
     super(props);
+    this.auth = new Auth();
     this.state = {
       email: '',
       password: '',
@@ -24,10 +25,10 @@ export default class LoginForm extends Component {
     this.setState({ error: '', loading: true });
     const { email, password } = this.state;
     
-    firebase.auth().signInWithEmailAndPassword(email, password)
+    this.auth.signInWithEmailAndPassword(email, password)
       .then(this.onLoginSuccess)
       .catch(() => {
-        firebase.auth().createUserWithEmailAndPassword(email, password)
+        this.auth.createUserWithEmailAndPassword(email, password)
           .then(this.onLoginSuccess)
           .catch(this.onLoginFailure);
       });

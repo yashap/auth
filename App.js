@@ -1,11 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
-import firebase from 'firebase';
 
 import LoginForm from './src/component/LoginForm';
 import { Button, Card, CardSection, Header, Spinner } from './src/component/common';
 import { getLogger } from './src/log';
-import { firebase as firebaseConfig } from './src/config';
+import Auth from './src/service/Auth';
 
 const logger = getLogger('App');
 
@@ -28,15 +27,15 @@ const cardSection = (WrappedComponent, props, children) => (
 export default class App extends React.Component {
   constructor(props) {
     super(props);
+    this.auth = new Auth();
     this.state = {
       authState: AuthState.LOADING,
     };
   }
 
   componentWillMount() {
-    firebase.initializeApp(firebaseConfig);
-
-    firebase.auth().onAuthStateChanged((user) => {
+    this.auth.initialize();
+    this.auth.onAuthStateChanged((user) => {
       if (user) {
         this.setState({ authState: AuthState.LOGGED_IN });
       } else {
@@ -55,7 +54,7 @@ export default class App extends React.Component {
       return cardSection(
         Button,
         {
-          onPress: () => firebase.auth().signOut()
+          onPress: () => this.auth.signOut()
         },
         'Log Out'
       );
